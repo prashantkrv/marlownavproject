@@ -1,7 +1,7 @@
 # **About**
 
 This is a simple bank application based on the requirements of
-MarlowNavigation assignment, which required "Allow users to deposit and 
+MarlowNavigation task, which required "Allow users to deposit and 
 withdraw money, and allow simultaneous access of an account"
 
 ## Requirements
@@ -16,8 +16,6 @@ IDE- to check out the code(Intellij preferred)
 
 Pull the code to your local system
 
-Run the sql file present in conf/evolution/default/1.sql to setup database 
-
 Steps to run the sql file
 1. open terminal
 2. "psql postgres" OR "psql -u postgres" command
@@ -28,10 +26,10 @@ To Run application-
 1. cd into the marlownavproject folder
 2. sbt run
 
-The application starts at localhost:9000
+>The application starts at localhost:9000
 
 Check the conf/routes file for all the REST API endpoints
-available with examples(explained below as well)-
+available (explained below as well with examples)-
 
 
 ### Tha application has two Controllers -
@@ -41,8 +39,21 @@ available with examples(explained below as well)-
 
 Rest Endpoints - 
 1. GET /user/create <br>
-        Request-{name:String, address:String} <br>
-        Response - 200 Ok
+        Request-
+````
+    {
+        name:String, 
+        address:String
+    } 
+````
+````
+#Example{
+        name:"Prashant", 
+        address:" airport road, bangalore, karnataka"
+     } 
+````
+
+   Response - 200 Ok
 
 
 **AccountController** - handling all account related requests such as creating an account,
@@ -68,6 +79,8 @@ Rest Endpoints -
         }
    
    Response - 200 Ok
+
+
 2. GET /account/credit <br>
    Request-
 ````
@@ -121,11 +134,11 @@ Response - 200 Ok
 ```
 
       #Example  { 
-        senderAccountId:Int, 
-        receiverAccountId:Int,
-        senderId:Int, 
-        amount: Int,
-        memo:String
+        senderAccountId:3, 
+        receiverAccountId:12,
+        senderId:2, 
+        amount: 24,
+        memo:"for dinner last night"
 }
 
 Response - 200 Ok
