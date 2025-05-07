@@ -1,0 +1,13 @@
+logs
+target
+project/target
+project/project/
+/.bsp
+/.idea
+/.g8
+/.DS_Store
+/.idea_modules
+/.classpath
+/.project
+/.settings
+/RUNNING_PID
