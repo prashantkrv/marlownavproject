@@ -14,12 +14,13 @@ IDE- to check out the code(Intellij preferred)
 
 ## Steps
 
-Pull the code to your local system
+Pull the code to your local system <br>
+> git clone https://github.com/prashantkrv/marlownavproject.git
 
-Steps to run the sql file
+Steps to setup the database: Run the sql file
 1. open terminal
-2. "psql postgres" OR "psql -u postgres" command
-3. run the 1.sql script by using command - "\i [PATH_TO_DIR]/marlownavproject/conf/evolutions/default/1.sql"
+2. Run "psql postgres" OR "psql -u postgres" command
+3. run the script.sql script by using command - "\i [PATH_TO_DIR]/marlownavproject/conf/evolutions/default/script.sql"
 
 
 To Run application- 
