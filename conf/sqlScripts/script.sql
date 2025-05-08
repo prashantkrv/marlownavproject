@@ -1,4 +1,5 @@
-
+-- Run this script for automatically setting up all the databases, tables and
+-- other dependencies required by the application
 CREATE USER "marlow" WITH PASSWORD 'marlow';
 
 CREATE DATABASE "marlowdb" WITH OWNER = "marlow";

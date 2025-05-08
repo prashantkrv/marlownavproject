@@ -42,7 +42,9 @@ class KafkaConsumerService @Inject()(configuration: Configuration,
   consumer.subscribe(Collections.singletonList(topic))
 
 
-
+  /**
+   * messages will be consumed and processed here after polling kafka at regular intervals
+   */
   private val runnable = new Runnable {
     override def run(): Unit = {
       val records: ConsumerRecords[String, String] = consumer.poll(java.time.Duration.ofMillis(1000))
@@ -59,6 +61,7 @@ class KafkaConsumerService @Inject()(configuration: Configuration,
     }
   }
 
+  //run a scheduler here to poll for messages at fixed intervals
   //actorSystem.scheduler.scheduleAtFixedRate(5.second, 1.seconds)(runnable)
 
   def consume(): List[String] = {

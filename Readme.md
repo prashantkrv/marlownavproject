@@ -20,7 +20,7 @@ Pull the code to your local system <br>
 Steps to setup the database: Run the sql file
 1. open terminal
 2. Run "psql postgres" OR "psql -u postgres" command
-3. run the script.sql script by using command - "\i [PATH_TO_DIR]/marlownavproject/conf/evolutions/default/script.sql"
+3. run the script.sql script by using command - "\i [PATH_TO_DIR]/marlownavproject/conf/sqlScripts/script.sql"
 
 
 To Run application- 

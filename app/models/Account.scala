@@ -50,7 +50,7 @@ class Accounts @Inject()(
   }
 
   def getAccount(id: Int): Future[AccountSerialized] = db.run(accounts.filter(_.id === id).result.head).recover {
-    case noSuchElementException: NoSuchElementException => throw new Exception(s"sAccount with ID- ${id}id not found")
+    case noSuchElementException: NoSuchElementException => throw new Exception(s"Account with ID- ${id} not found")
     case exception: Exception => throw new Exception(s"Exception occurred  for accountID ${id} ${exception.getMessage}")
   }
 
@@ -74,14 +74,18 @@ class Accounts @Inject()(
     val action = accounts.filter(_.id === accountId).forUpdate.result.headOption.flatMap {
       case Some(account) =>
         if (account.deserialize.owners.contains(userId)) {
-          if (account.balance >= amount && amount <= account.withdrawalLimit ) {
+          if (account.balance < amount) {
+            DBIO.failed(new Exception("Insufficient Balance"))
+          } else if(amount > account.withdrawalLimit ){
+            DBIO.failed(new Exception("Can debit above withdrawal limit"))
+          }else{
             accounts.filter(_.id === account.id).map(_.balance).update(account.balance - amount)
-          } else DBIO.failed(new Exception("Insufficient Balance"))
+          }
         } else DBIO.failed(new Exception("Unauthorized"))
       case None => DBIO.failed(new Exception("Account Not Found"))
     }
     db.run(action.transactionally).recover{
-      case exception: Exception => throw new Exception(s"Exception occurred  while debiting balance from ${accountId} ${exception.getMessage}")
+      case exception: Exception => throw new Exception(s"Error while debiting balance from ${accountId} : ${exception.getMessage}")
     }
   }
 
@@ -91,7 +95,7 @@ class Accounts @Inject()(
     * Its a collection of sql statements put together and run as a transaction.
     * It uses the forUpdate feature which blocks the rows for which the operation needs to be performed.
     * And all sql operations are performed as a single transaction, so either
-    * the whole operation is committed or it rollbacks and no changes are done.
+    * the whole operation is committed or it fails and rollbacks, so no changes are done.
     *
     * @param senderAccountId
     * @param receiverAccountId
@@ -105,7 +109,7 @@ class Accounts @Inject()(
         senderAccount <- accounts.filter(_.id === senderAccountId).forUpdate.result.head
         receiverAccount <- accounts.filter(_.id === receiverAccountId).forUpdate.result.head
       } yield {
-        if (senderAccount.balance >= amount && senderAccount.withdrawalLimit > amount) {
+        if (senderAccount.balance >= amount && senderAccount.withdrawalLimit >= amount) {
           DBIO.seq(accounts.filter(_.id === senderAccountId).map(_.balance).update(senderAccount.balance-amount),
           accounts.filter(_.id === receiverAccountId).map(_.balance).update(receiverAccount.balance+amount)
           )
@@ -115,7 +119,7 @@ class Accounts @Inject()(
       }
     }
       db.run(action.transactionally.flatten).recover{
-        case exception: Exception => throw new Exception(s"Exception occurred  while transferrring balance from ${senderAccountId} to ${receiverAccountId} ${exception.getMessage}")
+        case exception: Exception => throw new Exception(s"Exception occurred  while transferring balance from account ${senderAccountId} to account ${receiverAccountId} ${exception.getMessage}")
       }
   }
 
