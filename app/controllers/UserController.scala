@@ -44,7 +44,9 @@ class UserController @Inject()(
       }
       case None => Future(BadRequest("Invalid data"))
     }).recover {
-      case exception: Exception => InternalServerError("Error Occurred- " + exception.getMessage)
+      case exception: Exception =>
+        logger.error("Exception occurred- " + exception.getMessage)
+        InternalServerError("Exception Occurred- " + exception.getMessage)
     }
   }
 
