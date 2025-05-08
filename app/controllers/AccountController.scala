@@ -1,15 +1,12 @@
 package controllers
 
 import javax.inject._
-import play.api._
 import play.api.mvc._
-import models.{Account, AccountSerialized, Accounts}
-import play.api.libs.json.{JsError, JsSuccess, Json, Reads}
+import models.{Account, AccountSerialized}
+import play.api.libs.json.{JsError, JsSuccess}
 import play.api.Logger
 import scala.concurrent.{ExecutionContext, Future}
 import _root_.controllers.request.RequestUtils.{AccountData, CreditData, DebitData, TransferData}
-import services.{KafkaConsumerService, KafkaProducerService}
-
 
 @Singleton
 class AccountController @Inject()(
@@ -141,7 +138,7 @@ class AccountController @Inject()(
           logger.info(s"received request to credit Account ${creditData.accountId}, with credit amount ${creditData.amount}")
           val account = modelAccounts.getAccount(creditData.accountId)
 
-          def creditAndUpdateAmount(account: AccountSerialized) = modelAccounts.updateBalance(id = account.id, newBalance = account.balance + creditData.amount)
+          def creditAndUpdateAmount(account: AccountSerialized): Future[Int] = modelAccounts.updateBalance(id = account.id, newBalance = account.balance + creditData.amount)
 
           (for {
             accountResult <- account
@@ -190,11 +187,11 @@ class AccountController @Inject()(
           val senderAccount = modelAccounts.getAccount(transferData.senderAccountId)
           val receiverAccount = modelAccounts.getAccount(transferData.receiverAccountId)
 
-          def transferAmount(senderAccount: Account, receiverAccount: Account) = {
+          def transferAmount(senderAccount: Account, receiverAccount: Account): Future[Unit] = {
 
-            if(transferData.senderAccountId == transferData.receiverAccountId){
+            if (transferData.senderAccountId == transferData.receiverAccountId) {
               throw new Exception("Sender account and receiver account cannot be the same")
-            }else if (!senderAccount.owners.contains(transferData.senderId)) {
+            } else if (!senderAccount.owners.contains(transferData.senderId)) {
               throw new Exception(s"the user ${transferData.senderId} is not authorised to access account ${senderAccount.id} ")
             } else if (senderAccount.balance <= transferData.amount) {
               throw new Exception(s"Balance for account ${senderAccount.id} is not enough")

@@ -31,7 +31,7 @@ class KafkaProducerService @Inject()(configuration: Configuration,
   /**
    * messages here will be sent to the kafkaConsumer
    * */
-  def send(message: String) = Future{
+  def send(message: String) = Future {
     logger.info(s"sending message ${message} of topic ${topic} to kafka")
     val record = new ProducerRecord[String, String](topic, message)
     producer.send(record)
